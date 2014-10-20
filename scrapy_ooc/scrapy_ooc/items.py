@@ -8,7 +8,10 @@
 import scrapy
 
 
-class ScrapyOocItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class Concession(scrapy.Item):
+    url      = scrapy.Field()
+    holder   = scrapy.Field()
+    block    = scrapy.Field()
+    subarea  = scrapy.Field()
+    interest = scrapy.Field()
+    operator = scrapy.Field() 
