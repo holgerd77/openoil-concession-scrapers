@@ -48,3 +48,4 @@ class InDghExpItem(scrapy.Item):
     present_area    = scrapy.Field()
     relinquished_area = scrapy.Field()
     minimum_work_program_table = scrapy.Field()
+    work_done_table = scrapy.Field()

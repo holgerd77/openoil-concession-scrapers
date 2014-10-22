@@ -22,6 +22,20 @@ class InDghExpSpider(CrawlSpider):
             row_list.append(tr_sel.xpath('(./td)[1]/text()').extract()[0])
             row_list.append(tr_sel.xpath('(./td)[2]/text()').extract()[0])
             row_list.append(tr_sel.xpath('(./td)[3]/text()').extract()[0])
+            row_list.append(tr_sel.xpath('(./td)[4]/text()').extract()[0] + '\n')
+            table_list.append(row_list)
+            
+        return json.dumps(table_list)
+    
+    
+    def parse_work_done_table(self, table_sel):
+        table_list = [[u'Year', u'2D(LKM)', u'3D(SKM)', u'Wells',],]
+        tr_sel_list = table_sel.xpath('.//tr[not(@class="TableHead") and not(@align="right")]')
+        for tr_sel in tr_sel_list:
+            row_list = []
+            row_list.append(tr_sel.xpath('(./td)[1]/text()').extract()[0])
+            row_list.append(tr_sel.xpath('(./td)[2]/text()').extract()[0])
+            row_list.append(tr_sel.xpath('(./td)[3]/text()').extract()[0])
             row_list.append(tr_sel.xpath('(./td)[4]/text()').extract()[0])
             table_list.append(row_list)
             
@@ -57,6 +71,13 @@ class InDghExpSpider(CrawlSpider):
         if len(sel_list) > 0:
             minimum_work_program_table = self.parse_work_program_table(sel_list[0])
         l.add_value('minimum_work_program_table', minimum_work_program_table)
+        
+        work_done_table = u''
+        xpath = '//table[@id="ctl00_ContentDGH_grdViewBlockWorkDone"]'
+        sel_list = response.xpath(xpath)
+        if len(sel_list) > 0:
+            work_done_table = self.parse_work_done_table(sel_list[0])
+        l.add_value('work_done_table', work_done_table)
         
         yield l.load_item()
     
