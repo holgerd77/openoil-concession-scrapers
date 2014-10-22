@@ -35,6 +35,7 @@ class TnEtapCItem(scrapy.Item):
 
 class InDghExpItem(scrapy.Item):
     url           = scrapy.Field()
+    relinquished  = scrapy.Field()
     block_name    = scrapy.Field()
     round         = scrapy.Field()
     operator      = scrapy.Field()
@@ -49,3 +50,4 @@ class InDghExpItem(scrapy.Item):
     relinquished_area = scrapy.Field()
     minimum_work_program_table = scrapy.Field()
     work_done_table = scrapy.Field()
+    discovery_table = scrapy.Field()

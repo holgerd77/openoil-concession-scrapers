@@ -22,7 +22,7 @@ class InDghExpSpider(CrawlSpider):
             row_list.append(tr_sel.xpath('(./td)[1]/text()').extract()[0])
             row_list.append(tr_sel.xpath('(./td)[2]/text()').extract()[0])
             row_list.append(tr_sel.xpath('(./td)[3]/text()').extract()[0])
-            row_list.append(tr_sel.xpath('(./td)[4]/text()').extract()[0] + '\n')
+            row_list.append(tr_sel.xpath('(./td)[4]/text()').extract()[0])
             table_list.append(row_list)
             
         return json.dumps(table_list)
@@ -37,6 +37,18 @@ class InDghExpSpider(CrawlSpider):
             row_list.append(tr_sel.xpath('(./td)[2]/text()').extract()[0])
             row_list.append(tr_sel.xpath('(./td)[3]/text()').extract()[0])
             row_list.append(tr_sel.xpath('(./td)[4]/text()').extract()[0])
+            table_list.append(row_list)
+            
+        return json.dumps(table_list)
+    
+    
+    def parse_discovery_table(self, table_sel):
+        table_list = [[u'Discovery', u'Well',],]
+        tr_sel_list = table_sel.xpath('.//tr[not(@class="TableHead")]')
+        for tr_sel in tr_sel_list:
+            row_list = []
+            row_list.append(tr_sel.xpath('(./td)[1]/text()').extract()[0])
+            row_list.append(tr_sel.xpath('(./td)[2]/text()').extract()[0])
             table_list.append(row_list)
             
         return json.dumps(table_list)
@@ -79,18 +91,35 @@ class InDghExpSpider(CrawlSpider):
             work_done_table = self.parse_work_done_table(sel_list[0])
         l.add_value('work_done_table', work_done_table)
         
+        discovery_table = u''
+        xpath = '//table[@id="ctl00_ContentDGH_grdViewBlockDiscovery"]'
+        sel_list = response.xpath(xpath)
+        if len(sel_list) > 0:
+            discovery_table = self.parse_discovery_table(sel_list[0])
+        l.add_value('discovery_table', discovery_table)
+        
         yield l.load_item()
     
     
     def parse(self, response):
-        urls = response.xpath('//table[@id="ctl00_ContentDGH_grdVwAllBlocks"]//tr/td/a/@href')
+        non_relinquished_urls = response.xpath('//table[@id="ctl00_ContentDGH_grdVwAllBlocks"]//tr/td/a/@href')
             
         # Complete: "...urls:", Extract: "...urls[0:3]:"
-        for url in urls[0:3]:
+        for url in non_relinquished_urls:
             url = 'http://dghindia.org/' + url.re('"", "([^"]*)')[0]
             l = ConcessionLoader(item=InDghExpItem(), response=response)
             l.add_value('url', url)
+            l.add_value('relinquished', 'NO')
             yield Request(url, callback=self.parse_detail_page, meta={'l': l})
-            #l.add_value('partenaire', table.xpath('.//table[@class="tab_concess"]//tr[not(@class="title")]/td[1]/p/text()').extract())
-            #l.add_value('participation', table.xpath('.//table[@class="tab_concess"]//tr[not(@class="title")]/td[2]/p/text()').extract())
-            #yield Request(url, callback=self.parse_detail_page, meta={'l': l})
+        
+        relinquished_urls = response.xpath('//table[@id="ctl00_ContentDGH_grdVwAllBlocks"]//tr/td/a/@href')
+            
+        # Complete: "...urls:", Extract: "...urls[0:3]:"
+        for url in relinquished_urls:
+            url = 'http://dghindia.org/' + url.re('"", "([^"]*)')[0]
+            l = ConcessionLoader(item=InDghExpItem(), response=response)
+            l.add_value('url', url)
+            l.add_value('relinquished', 'YES')
+            yield Request(url, callback=self.parse_detail_page, meta={'l': l})
+        
+        
