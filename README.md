@@ -4,13 +4,10 @@ Concession Scrapers for OpenOil.net
 Scrapers for oil concessions coming from various sources, list with source urls and further description
 can be found at:
 
-* [Google Docs Spreadsheet - Concession Sources](https://docs.google.com/spreadsheets/d/1nCo1nf3EU65Yw6_Td1P8jTMZCTArbB2vecUcekoR4mE/edit#gid=0)
-
-Installation
-------------
+* [Google Docs Spreadsheet](https://docs.google.com/spreadsheets/d/1nCo1nf3EU65Yw6_Td1P8jTMZCTArbB2vecUcekoR4mE/edit#gid=0)
 
 Install Scrapy
-^^^^^^^^^^^^^
+--------------
 [Python/Scrapy](http://scrapy.org/) is used for scrapers.
 
 Install Scrapy following the [installation instructions](http://doc.scrapy.org/en/latest/intro/install.html)
@@ -18,7 +15,7 @@ from the website (version used for scraping was ``0.24``, possible to install co
 ``pip install Scrapy==0.24``).
 
 Install Sources from GitHub
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 [Git](http://git-scm.com/downloads) has to be installed on system.
 
 Sources can then be cloned from Git repository from shell (or via GUI) with
