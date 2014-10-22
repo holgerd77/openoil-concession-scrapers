@@ -6,11 +6,11 @@ from scrapy_ooc.item_loaders import ConcessionLoader
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.http import Request
 
-from scrapy_ooc.items import InDghExpItem
+from scrapy_ooc.items import InDghDevItem
 
 
-class InDghExpSpider(CrawlSpider):
-    name = 'IN_DGH_EXP'
+class InDghDevSpider(CrawlSpider):
+    name = 'IN_DGH_DEV'
     allowed_domains = ['dghindia.org']
     start_urls = ['http://dghindia.org/PSC_D.aspx?tab=0']
     
@@ -56,70 +56,47 @@ class InDghExpSpider(CrawlSpider):
     
     def parse_detail_page(self, response):
         l = response.meta['l']
-        xpath_base = '//table[@id="ctl00_ContentDGH_detailsVwBlockStatus"]//'
         
+        xpath_base = '//table[@id="ctl00_ContentDGH_detailsVwGenInfo" or @id="ctl00_ContentDGH_detailsvwFields"]//'
         status_fields = [
-            ('block_name', 'Block Name'),
-            ('round', 'Round'),
-            ('operator', 'Operator'),
-            ('consortium', 'Consortium'),
-            ('status', 'Status'),
-            ('basin', 'Basin'),
-            ('state', 'State'),
-            ('date_of_signing', 'Date of Signing'),
+            ('current_activity_status', 'Current Activity Status'),
+            ('area_sq_km', 'Area(sq. km)'),
+            ('date_of_signing_contract', 'Date of Signing Contract'),
             ('effective_date', 'Effective Date'),
-            ('initial_area', 'Initial Area'),
-            ('present_area', 'Present Area'),
-            ('relinquished_area', 'Relinquised Area'),
+            ('current_consortium', 'Current Consortium'),
+            ('reservoir', 'Reservoir'),
+            ('trap', 'Trap'),
+            ('drive', 'Drive'),
+            ('source', 'Source'),
+            ('cap_seal', 'Cap/Seal'),
+            #('', ''),
         ]
         
         for sf in status_fields:
             xpath = xpath_base + 'tr[contains(td, "' + sf[1] + '")]/td[2]/text()'
             l.add_value(sf[0], response.xpath(xpath).extract())
         
-        minimum_work_program_table = u''
-        xpath = '//table[@id="ctl00_ContentDGH_grdVwBlockMWP"]'
-        sel_list = response.xpath(xpath)
-        if len(sel_list) > 0:
-            minimum_work_program_table = self.parse_work_program_table(sel_list[0])
-        l.add_value('minimum_work_program_table', minimum_work_program_table)
-        
-        work_done_table = u''
-        xpath = '//table[@id="ctl00_ContentDGH_grdViewBlockWorkDone"]'
-        sel_list = response.xpath(xpath)
-        if len(sel_list) > 0:
-            work_done_table = self.parse_work_done_table(sel_list[0])
-        l.add_value('work_done_table', work_done_table)
-        
-        discovery_table = u''
-        xpath = '//table[@id="ctl00_ContentDGH_grdViewBlockDiscovery"]'
-        sel_list = response.xpath(xpath)
-        if len(sel_list) > 0:
-            discovery_table = self.parse_discovery_table(sel_list[0])
-        l.add_value('discovery_table', discovery_table)
+        #minimum_work_program_table = u''
+        #xpath = '//table[@id="ctl00_ContentDGH_grdVwBlockMWP"]'
+        #sel_list = response.xpath(xpath)
+        #if len(sel_list) > 0:
+        #    minimum_work_program_table = self.parse_work_program_table(sel_list[0])
+        #l.add_value('minimum_work_program_table', minimum_work_program_table)
         
         yield l.load_item()
     
     
     def parse(self, response):
-        non_relinquished_urls = response.xpath('//table[@id="ctl00_ContentDGH_grdVwAllBlocks"]//tr/td/a/@href')
+        tr_sel_list = response.xpath('//table[@id="ctl00_ContentDGH_grdVwAllFields"]//tr[not(@class="TableHead")]')
             
         # Complete: "...urls:", Extract: "...urls[0:3]:"
-        for url in non_relinquished_urls:
-            url = 'http://dghindia.org/' + url.re('"", "([^"]*)')[0]
-            l = ConcessionLoader(item=InDghExpItem(), response=response)
+        for tr_sel in tr_sel_list[0:3]:
+            url = 'http://dghindia.org/' + tr_sel.xpath('./td/a/@href').re('"", "([^"]*)')[0]
+            l = ConcessionLoader(item=InDghDevItem(), selector=tr_sel, response=response)
             l.add_value('url', url)
-            l.add_value('relinquished', 'NO')
-            yield Request(url, callback=self.parse_detail_page, meta={'l': l})
-        
-        relinquished_urls = response.xpath('//table[@id="ctl00_ContentDGH_grdVwAllBlocks"]//tr/td/a/@href')
-            
-        # Complete: "...urls:", Extract: "...urls[0:3]:"
-        for url in relinquished_urls:
-            url = 'http://dghindia.org/' + url.re('"", "([^"]*)')[0]
-            l = ConcessionLoader(item=InDghExpItem(), response=response)
-            l.add_value('url', url)
-            l.add_value('relinquished', 'YES')
+            l.add_xpath('field_name', '(./td)[1]/a/text()')
+            l.add_xpath('round', '(./td)[2]/text()')
+            l.add_xpath('basin', '(./td)[3]/text()')
             yield Request(url, callback=self.parse_detail_page, meta={'l': l})
         
         

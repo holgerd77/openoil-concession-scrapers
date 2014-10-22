@@ -51,3 +51,22 @@ class InDghExpItem(scrapy.Item):
     minimum_work_program_table = scrapy.Field()
     work_done_table = scrapy.Field()
     discovery_table = scrapy.Field()
+
+class InDghDevItem(scrapy.Item):
+    url           = scrapy.Field()
+    field_name    = scrapy.Field()
+    round         = scrapy.Field()
+    basin         = scrapy.Field()
+    current_activity_status = scrapy.Field()
+    area_sq_km    = scrapy.Field()
+    date_of_signing_contract = scrapy.Field()
+    effective_date = scrapy.Field()
+    current_consortium = scrapy.Field()
+    reservoir      = scrapy.Field()
+    trap           = scrapy.Field()
+    drive          = scrapy.Field()
+    source         = scrapy.Field()
+    cap_seal       = scrapy.Field()
+    
+    
+    
