@@ -84,5 +84,21 @@ class InDghWellsItem(scrapy.Item):
     state_name_offshore = scrapy.Field()
     latitude      = scrapy.Field()
     longitude     = scrapy.Field()
-    
+
+class ThPttepItem(scrapy.Item):
+    url           = scrapy.Field()
+    project       = scrapy.Field()
+    type_of_business = scrapy.Field()
+    concessions   = scrapy.Field()
+    area          = scrapy.Field()
+    location      = scrapy.Field()
+    partners      = scrapy.Field()
+    operator      = scrapy.Field()
+    phase         = scrapy.Field()
+    investment_type = scrapy.Field()
+    petroleum_fields = scrapy.Field()
+    type_of_petroleum = scrapy.Field()
+    signing_date  = scrapy.Field()
+    production_start_up = scrapy.Field()
+    website       = scrapy.Field()
     

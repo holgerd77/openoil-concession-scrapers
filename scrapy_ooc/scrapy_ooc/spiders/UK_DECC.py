@@ -8,6 +8,9 @@ from scrapy_ooc.items import UkDeccItem
 
 
 class UkDeccSpider(CrawlSpider):
+    '''
+    DEVELOPMENT PAUSED.
+    '''
     name = 'UK_DECC'
     allowed_domains = ['www.og.decc.gov.uk']
     start_urls = ['https://www.og.decc.gov.uk/eng/fox/decc/PED301X/companyBlocksNav']
