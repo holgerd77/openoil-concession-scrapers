@@ -55,6 +55,7 @@ class InDghExpItem(scrapy.Item):
 class InDghDevItem(scrapy.Item):
     url           = scrapy.Field()
     field_name    = scrapy.Field()
+    field_brief   = scrapy.Field()
     round         = scrapy.Field()
     basin         = scrapy.Field()
     current_activity_status = scrapy.Field()
@@ -67,6 +68,10 @@ class InDghDevItem(scrapy.Item):
     drive          = scrapy.Field()
     source         = scrapy.Field()
     cap_seal       = scrapy.Field()
+    gg_development_activities_table = scrapy.Field()
+    yearly_production_table = scrapy.Field()
+    development_wells_table = scrapy.Field()
+    
     
     
     
