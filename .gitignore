@@ -3,5 +3,6 @@
 .settings
 .DS_Store
 *.csv
+*.txt
 *.csv#
 *.pyc
