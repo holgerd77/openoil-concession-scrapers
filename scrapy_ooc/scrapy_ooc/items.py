@@ -72,6 +72,17 @@ class InDghDevItem(scrapy.Item):
     yearly_production_table = scrapy.Field()
     development_wells_table = scrapy.Field()
     
-    
+class InDghWellsItem(scrapy.Item):
+    url           = scrapy.Field()
+    well_name     = scrapy.Field()
+    block         = scrapy.Field()
+    field         = scrapy.Field()
+    basin         = scrapy.Field()
+    round         = scrapy.Field()
+    operator      = scrapy.Field()
+    consortium    = scrapy.Field()
+    state_name_offshore = scrapy.Field()
+    latitude      = scrapy.Field()
+    longitude     = scrapy.Field()
     
     
