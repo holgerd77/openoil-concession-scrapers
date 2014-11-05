@@ -13,11 +13,6 @@ class TnEtapCSpider(CrawlSpider):
     allowed_domains = ['www.etap.com.tn']
     start_urls = ['http://www.etap.com.tn/index.php?id=1160']
 
-    rules = (
-        # all sets: "fiche=", result limitation: "fiche=4" 
-        #Rule(LinkExtractor(allow=r'fiche=4'), callback='parse_item', follow=False),
-    )
-
     def parse_detail_page(self, response):
         l = response.meta['l']
         xpath = '//td[@class="bg_tab_concession"]/h4/strong/text()'
