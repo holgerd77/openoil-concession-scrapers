@@ -10,28 +10,41 @@ from scrapy_ooc.items import PePerupetroItem
 
 class PePerupetroSpider(CrawlSpider):
     name = 'PE_PERUPETRO'
-    allowed_domains = ['www.etap.com.tn']
-    start_urls = ['http://www.etap.com.tn/index.php?id=1160']
+    allowed_domains = ['www.perupetro.com.pe']
+    start_urls = ['http://www.perupetro.com.pe/relaciondecontratos/relacion.jsp?token=99']
+
 
     def parse_detail_page(self, response):
-        l = response.meta['l']
-        xpath = '//td[@class="bg_tab_concession"]/h4/strong/text()'
-        l.add_value('concession', response.xpath(xpath).extract())
-        l.add_value('url', response.url)
-        xpath = '//table[@class="tab_concess"]//tr[contains(td/p/text(), "Permis")]/td[2]/text()'
-        l.add_value('permis', response.xpath(xpath).extract())
-        
-        yield l.load_item()
+        lote = response.meta['lote']
+
+        table_rows = response.xpath('//table[@class="tablita"]//tr[position() > 1]')
+        for row in table_rows:
+            l = ContractLoader(item=PePerupetroItem(), response=response)
+            l.add_value('url', response.url)
+            l.add_value('lote', lote)
+            if len(table_rows) == 1:
+                l.add_value('no_de_modification', row.xpath('./td[2]//text()').extract())
+                l.add_value('fecha_de_suscription', row.xpath('./td[3]//text()').extract())
+                l.add_value('testimonios_y_modificationes', row.xpath('./td[4]//text()').extract())
+                l.add_value('no_de_decreto_supremo', row.xpath('./td[5]//text()').extract())
+                l.add_value('notaria', row.xpath('./td[6]//text()').extract())
+                l.add_value('pdf_url', row.xpath('./td[4]//a/@href').extract())
+            else:
+                l.add_value('no_de_modification', row.xpath('./td[not(@rowspan)][1]//text()').extract())
+                l.add_value('fecha_de_suscription', row.xpath('./td[not(@rowspan)][2]//text()').extract())
+                l.add_value('testimonios_y_modificationes', row.xpath('./td[not(@rowspan)][3]//text()').extract())
+                l.add_value('no_de_decreto_supremo', row.xpath('./td[not(@rowspan)][4]//text()').extract())
+                l.add_value('notaria', row.xpath('./td[not(@rowspan)][5]//text()').extract())
+                l.add_value('pdf_url', row.xpath('./td[not(@rowspan)][3]//a/@href').extract())
+            yield l.load_item()
     
     
     def parse(self, response):
-        tables = response.xpath('//td[@class="cartouche_contenu"]/div/div/table')
+        url_tokens = response.xpath('//select[@name="id_lote"]/option')
         
-        # Complete: "...tables:", Extract: "...tables[0:3]:"
-        for table in tables[0:3]:
-            url  = 'http://www.etap.com.tn'
-            url += table.xpath('.//a/@href').extract()[0]
-            l = ContractLoader(item=PePerupetroItem(), response=response)
-            l.add_value('partenaire', table.xpath('.//table[@class="tab_concess"]//tr[not(@class="title")]/td[1]/p/text()').extract())
-            yield Request(url, callback=self.parse_detail_page, meta={'l': l})
+        # Complete: "...url_tokens:", Extract: "...url_tokens[0:3]:"
+        for token in url_tokens:
+            url  = 'http://www.perupetro.com.pe/relaciondecontratos/relacion.jsp?token=' + token.xpath('./@value').extract()[0]
+            lote = (token.xpath('./text()').extract()[0]).strip()
+            yield Request(url, callback=self.parse_detail_page, meta={'lote': lote})
         
