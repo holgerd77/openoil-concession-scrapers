@@ -3,7 +3,7 @@ download/
 .pydevproject
 .settings
 .DS_Store
-*.csv
 *.txt
-*.csv#
+scrapy_concessions/*.csv
+scrapy_contracts/*.csv
 *.pyc
